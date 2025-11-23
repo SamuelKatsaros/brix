@@ -4,9 +4,9 @@ import { Building2, MapPin, Users } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export default function PropertiesPage() {
+export default async function PropertiesPage() {
     const properties = store.getProperties();
-    const invoices = store.getInvoices();
+    const invoices = await store.getInvoices();
 
     // Calculate invoice count per property
     const propertyStats = properties.map(prop => {

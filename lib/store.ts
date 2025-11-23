@@ -1,5 +1,6 @@
 import { Invoice, Organization, Property, User, Vendor, WorkOrder } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
+import { kv } from '@vercel/kv';
 
 // --- Seed Data ---
 
@@ -101,53 +102,96 @@ const SEED_INVOICES: Invoice[] = [
     }
 ];
 
-// --- Store Implementation ---
+// --- Store Implementation with Vercel KV ---
 
-class MockStore {
+const INVOICES_KEY = 'invoices:all';
+
+class HybridStore {
     users = USERS;
     properties = PROPERTIES;
     vendors = VENDORS;
-    invoices: Invoice[] = [...SEED_INVOICES];
 
-    getInvoices() { return this.invoices; }
-    getInvoice(id: string) {
-        const invoice = this.invoices.find(i => i.id === id);
-        if (!invoice) {
-            console.log(`[Store] Invoice ${id} not found. Available IDs:`, this.invoices.map(i => i.id));
+    // Initialize KV with seed data if not already present
+    async initializeInvoices() {
+        try {
+            const existing = await kv.get<Invoice[]>(INVOICES_KEY);
+            if (!existing) {
+                await kv.set(INVOICES_KEY, SEED_INVOICES);
+                console.log('[Store] Initialized KV with seed invoices');
+            }
+        } catch (error) {
+            console.error('[Store] KV initialization failed, using in-memory fallback:', error);
         }
-        return invoice;
     }
-    addInvoice(invoice: Invoice) {
-        console.log(`[Store] Adding invoice ${invoice.id}`);
-        this.invoices.unshift(invoice);
+
+    async getInvoices(): Promise<Invoice[]> {
+        try {
+            const invoices = await kv.get<Invoice[]>(INVOICES_KEY);
+            return invoices || SEED_INVOICES;
+        } catch (error) {
+            console.error('[Store] KV read failed, using seed data:', error);
+            return SEED_INVOICES;
+        }
     }
-    updateInvoice(id: string, updates: Partial<Invoice>) {
-        const idx = this.invoices.findIndex(i => i.id === id);
-        if (idx !== -1) {
-            this.invoices[idx] = { ...this.invoices[idx], ...updates, updatedAt: new Date().toISOString() };
-            console.log(`[Store] Updated invoice ${id}`, updates);
+
+    async getInvoice(id: string): Promise<Invoice | undefined> {
+        try {
+            const invoices = await this.getInvoices();
+            const invoice = invoices.find(i => i.id === id);
+            if (!invoice) {
+                console.log(`[Store] Invoice ${id} not found. Available IDs:`, invoices.map(i => i.id));
+            }
+            return invoice;
+        } catch (error) {
+            console.error('[Store] KV read failed:', error);
+            return undefined;
+        }
+    }
+
+    async addInvoice(invoice: Invoice) {
+        try {
+            const invoices = await this.getInvoices();
+            invoices.unshift(invoice);
+            await kv.set(INVOICES_KEY, invoices);
+            console.log(`[Store] Added invoice ${invoice.id} to KV`);
+        } catch (error) {
+            console.error('[Store] KV write failed:', error);
+        }
+    }
+
+    async updateInvoice(id: string, updates: Partial<Invoice>) {
+        try {
+            const invoices = await this.getInvoices();
+            const idx = invoices.findIndex(i => i.id === id);
+            if (idx !== -1) {
+                invoices[idx] = { ...invoices[idx], ...updates, updatedAt: new Date().toISOString() };
+                await kv.set(INVOICES_KEY, invoices);
+                console.log(`[Store] Updated invoice ${id}`, updates);
+            }
+        } catch (error) {
+            console.error('[Store] KV update failed:', error);
         }
     }
 
     getVendors() { return this.vendors; }
     getProperties() { return this.properties; }
 
-    getStats() {
-        const totalSpend = this.invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
-        const totalSavings = this.invoices.reduce((sum, inv) => sum + (inv.analysis?.savingsPotential || 0), 0);
-        const flaggedCount = this.invoices.filter(inv => inv.analysis?.recommendedAction === 'review' || inv.analysis?.recommendedAction === 'dispute').length;
+    async getStats() {
+        try {
+            const invoices = await this.getInvoices();
+            const totalSpend = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+            const totalSavings = invoices.reduce((sum, inv) => sum + (inv.analysis?.savingsPotential || 0), 0);
+            const flaggedCount = invoices.filter(inv => inv.analysis?.recommendedAction === 'review' || inv.analysis?.recommendedAction === 'dispute').length;
 
-        return { totalSpend, totalSavings, flaggedCount, invoiceCount: this.invoices.length };
+            return { totalSpend, totalSavings, flaggedCount, invoiceCount: invoices.length };
+        } catch (error) {
+            console.error('[Store] KV stats failed:', error);
+            return { totalSpend: 0, totalSavings: 0, flaggedCount: 0, invoiceCount: 0 };
+        }
     }
 }
 
-// Use global singleton pattern to persist across hot reloads in dev mode
-const globalForStore = globalThis as unknown as {
-    store: MockStore | undefined;
-};
+export const store = new HybridStore();
 
-export const store = globalForStore.store ?? new MockStore();
-
-if (process.env.NODE_ENV !== 'production') {
-    globalForStore.store = store;
-}
+// Initialize on module load (for serverless cold starts)
+store.initializeInvoices().catch(console.error);

@@ -4,9 +4,9 @@ import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
-export default function VendorsPage() {
+export default async function VendorsPage() {
     const vendors = store.getVendors();
-    const invoices = store.getInvoices();
+    const invoices = await store.getInvoices();
 
     // Calculate stats per vendor
     const vendorStats = vendors.map(vendor => {
@@ -40,8 +40,8 @@ export default function VendorsPage() {
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-lg font-bold">{vendor.name}</CardTitle>
                                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${vendor.trustScore > 80 ? 'bg-emerald-100 text-emerald-800' :
-                                        vendor.trustScore > 50 ? 'bg-amber-100 text-amber-800' :
-                                            'bg-red-100 text-red-800'
+                                    vendor.trustScore > 50 ? 'bg-amber-100 text-amber-800' :
+                                        'bg-red-100 text-red-800'
                                     }`}>
                                     Trust: {vendor.trustScore}
                                 </div>

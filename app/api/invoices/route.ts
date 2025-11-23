@@ -5,7 +5,8 @@ import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
-    return NextResponse.json(store.getInvoices());
+    const invoices = await store.getInvoices();
+    return NextResponse.json(invoices);
 }
 
 export async function POST(request: Request) {
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
             updatedAt: new Date().toISOString()
         };
 
-        store.addInvoice(newInvoice);
+        await store.addInvoice(newInvoice);
 
         return NextResponse.json(newInvoice);
     } catch (error) {

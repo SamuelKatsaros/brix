@@ -8,9 +8,9 @@ import { ArrowRight } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export default function DashboardPage() {
-  const stats = store.getStats();
-  const recentInvoices = store.getInvoices().slice(0, 5);
+export default async function DashboardPage() {
+  const stats = await store.getStats();
+  const recentInvoices = (await store.getInvoices()).slice(0, 5);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -46,7 +46,7 @@ export default function DashboardPage() {
                     {formatCurrency(invoice.totalAmount)}
                   </div>
                   <div className={`ml-4 text-xs px-2 py-1 rounded-full ${invoice.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
-                      invoice.status === 'review' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'
+                    invoice.status === 'review' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'
                     }`}>
                     {invoice.status}
                   </div>

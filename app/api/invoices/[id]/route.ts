@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const invoice = store.getInvoice(id);
+    const invoice = await store.getInvoice(id);
     if (!invoice) {
         return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
@@ -14,8 +14,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     try {
         const { id } = await params;
         const body = await request.json();
-        store.updateInvoice(id, body);
-        return NextResponse.json(store.getInvoice(id));
+        await store.updateInvoice(id, body);
+        const updated = await store.getInvoice(id);
+        return NextResponse.json(updated);
     } catch (error) {
         return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }

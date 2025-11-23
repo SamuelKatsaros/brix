@@ -54,7 +54,7 @@ export async function GET() {
 
         // Title
         doc.setFontSize(20);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const title = 'Vendor Performance Scorecard';
         const titleWidth = doc.getTextWidth(title);
         doc.text(title, (210 - titleWidth) / 2, yPos);
@@ -62,7 +62,7 @@ export async function GET() {
 
         // Vendor Performance
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Vendor Performance Summary', 20, yPos);
         yPos += 10;
 
@@ -73,12 +73,12 @@ export async function GET() {
             }
             
             doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text(metric.vendor.name, 20, yPos);
             yPos += 7;
             
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
+            doc.setFont('helvetica', 'normal');
             doc.text(`Trade: ${metric.vendor.trade} | Service Area: ${metric.vendor.serviceArea}`, 20, yPos);
             yPos += 7;
             doc.text(`Trust Score: ${metric.avgTrustScore}/100 ${metric.vendor.isPreferred ? '(Preferred Vendor)' : ''}`, 20, yPos);
@@ -101,7 +101,7 @@ export async function GET() {
 
         // Recommendations
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Recommendations', 20, yPos);
         yPos += 10;
 
@@ -114,11 +114,11 @@ export async function GET() {
                 yPos = 20;
             }
             doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text('Recommended Vendors:', 20, yPos);
             yPos += 7;
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
+            doc.setFont('helvetica', 'normal');
             preferredVendors.forEach(m => {
                 if (yPos > 270) {
                     doc.addPage();
@@ -136,11 +136,11 @@ export async function GET() {
                 yPos = 20;
             }
             doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text('Vendors Requiring Review:', 20, yPos);
             yPos += 7;
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
+            doc.setFont('helvetica', 'normal');
             doc.setTextColor(255, 0, 0);
             reviewVendors.forEach(m => {
                 if (yPos > 270) {

@@ -43,14 +43,14 @@ export async function GET() {
 
         // Title
         doc.setFontSize(20);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const title = 'Monthly Maintenance Spend Report';
         const titleWidth = doc.getTextWidth(title);
         doc.text(title, (210 - titleWidth) / 2, yPos);
         
         yPos += 10;
         doc.setFontSize(12);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         const monthText = `${now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
         const monthWidth = doc.getTextWidth(monthText);
         doc.text(monthText, (210 - monthWidth) / 2, yPos);
@@ -59,12 +59,12 @@ export async function GET() {
 
         // Executive Summary
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Executive Summary', 20, yPos);
         yPos += 10;
         
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         doc.text(`Total Spend: ${formatCurrency(stats.totalSpend)}`, 20, yPos);
         yPos += 7;
         doc.text(`Identified Savings: ${formatCurrency(stats.totalSavings)}`, 20, yPos);
@@ -76,7 +76,7 @@ export async function GET() {
 
         // Spend by Property
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Spend by Property', 20, yPos);
         yPos += 10;
         
@@ -88,7 +88,7 @@ export async function GET() {
         });
 
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         Object.entries(propertySpend).forEach(([prop, amount]) => {
             if (yPos > 270) {
                 doc.addPage();
@@ -101,7 +101,7 @@ export async function GET() {
 
         // Spend by Vendor
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Spend by Vendor', 20, yPos);
         yPos += 10;
         
@@ -113,7 +113,7 @@ export async function GET() {
         });
 
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         Object.entries(vendorSpend).forEach(([vendor, amount]) => {
             if (yPos > 270) {
                 doc.addPage();
@@ -126,7 +126,7 @@ export async function GET() {
 
         // Detailed Invoice List
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Detailed Invoice List', 20, yPos);
         yPos += 10;
         
@@ -139,11 +139,11 @@ export async function GET() {
             const property = properties.find(p => p.id === inv.propertyId);
             
             doc.setFontSize(10);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text(`Invoice ${inv.invoiceNumber}`, 20, yPos);
             yPos += 7;
             
-            doc.setFont(undefined, 'normal');
+            doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
             doc.text(`Vendor: ${vendor?.name || 'Unknown'} | Property: ${property?.name || 'Unknown'}`, 20, yPos);
             yPos += 7;

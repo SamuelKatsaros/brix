@@ -38,14 +38,14 @@ export async function GET() {
 
         // Title
         doc.setFontSize(20);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const title = 'Cost Savings Summary';
         const titleWidth = doc.getTextWidth(title);
         doc.text(title, (210 - titleWidth) / 2, yPos);
         yPos += 10;
         
         doc.setFontSize(12);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         const subtitle = 'AI-Identified Savings Opportunities & ROI Analysis';
         const subtitleWidth = doc.getTextWidth(subtitle);
         doc.text(subtitle, (210 - subtitleWidth) / 2, yPos);
@@ -53,12 +53,12 @@ export async function GET() {
 
         // Executive Summary
         doc.setFontSize(16);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Executive Summary', 20, yPos);
         yPos += 10;
         
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         doc.text(`Total Identified Savings: ${formatCurrency(stats.totalSavings)}`, 20, yPos);
         yPos += 7;
         doc.text(`Total Maintenance Spend: ${formatCurrency(stats.totalSpend)}`, 20, yPos);
@@ -71,7 +71,7 @@ export async function GET() {
         // Savings Opportunities
         if (savingsInvoices.length > 0) {
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text('Identified Savings Opportunities', 20, yPos);
             yPos += 10;
             
@@ -84,11 +84,11 @@ export async function GET() {
                 const property = properties.find(p => p.id === inv.propertyId);
                 
                 doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
+                doc.setFont('helvetica', 'bold');
                 doc.text(`Invoice ${inv.invoiceNumber}`, 20, yPos);
                 yPos += 7;
                 
-                doc.setFont(undefined, 'normal');
+                doc.setFont('helvetica', 'normal');
                 doc.text(`Vendor: ${vendor?.name || 'Unknown'} | Property: ${property?.name || 'Unknown'}`, 20, yPos);
                 yPos += 7;
                 doc.text(`Potential Savings: ${formatCurrency(inv.analysis?.savingsPotential || 0)}`, 20, yPos);
@@ -105,7 +105,7 @@ export async function GET() {
         // Disputed Charges
         if (disputedInvoices.length > 0) {
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text('Successfully Disputed Charges', 20, yPos);
             yPos += 10;
             
@@ -117,11 +117,11 @@ export async function GET() {
                 const vendor = vendors.find(v => v.id === inv.vendorId);
                 
                 doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
+                doc.setFont('helvetica', 'bold');
                 doc.text(`Invoice ${inv.invoiceNumber}`, 20, yPos);
                 yPos += 7;
                 
-                doc.setFont(undefined, 'normal');
+                doc.setFont('helvetica', 'normal');
                 doc.text(`Vendor: ${vendor?.name || 'Unknown'}`, 20, yPos);
                 yPos += 7;
                 doc.text(`Disputed Amount: ${formatCurrency(inv.analysis?.savingsPotential || 0)}`, 20, yPos);
@@ -129,19 +129,19 @@ export async function GET() {
             });
             
             doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.text(`Total Disputed: ${formatCurrency(totalDisputed)}`, 20, yPos);
             yPos += 15;
         }
 
         // ROI Analysis
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('BrixAI System ROI', 20, yPos);
         yPos += 10;
         
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         doc.text(`The BrixAI system has identified ${formatCurrency(stats.totalSavings)} in potential savings`, 20, yPos);
         yPos += 7;
         doc.text(`across ${stats.flaggedCount} flagged invoices.`, 20, yPos);

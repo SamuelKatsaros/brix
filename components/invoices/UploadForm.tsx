@@ -51,8 +51,9 @@ export function UploadForm() {
 
             if (!res.ok) throw new Error('Upload failed');
 
-            const invoice = await res.json();
-            router.push(`/invoices/${invoice.id}`);
+            // Redirect to list page to avoid 404 on serverless without DB
+            router.push(`/invoices?new=true`);
+            router.refresh();
         } catch (error) {
             console.error(error);
             setIsUploading(false);

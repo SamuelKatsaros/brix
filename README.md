@@ -14,7 +14,9 @@ BrixAI is a production-quality web application designed to help property manager
 - **Frontend**: Next.js 14 (App Router), React, Tailwind CSS, Framer Motion, Recharts.
 - **Backend**: Next.js API Routes.
 - **Database**: In-memory mock store (designed for easy swap to PostgreSQL).
-- **AI**: Google Gemini 2.0 Flash (with automatic fallback to mock if no API key).
+- **AI**: Google Gemini 2.5 Flash (with automatic fallback to mock if no API key).
+
+> **Note**: The current in-memory store doesn't persist data across Vercel's serverless function invocations. Uploaded invoices will trigger AI analysis but won't appear in the list. To persist data, connect a database like PostgreSQL or use Vercel KV.
 
 ## Getting Started
 

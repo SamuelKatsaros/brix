@@ -2,11 +2,19 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Users, DollarSign, Bell, Shield, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
     const [aiEnabled, setAiEnabled] = useState(true);
     const [notifications, setNotifications] = useState(true);
+    const [hasApiKey, setHasApiKey] = useState(false);
+
+    useEffect(() => {
+        fetch('/api/ai-status')
+            .then(res => res.json())
+            .then(data => setHasApiKey(data.hasKey))
+            .catch(() => setHasApiKey(false));
+    }, []);
 
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
@@ -107,7 +115,7 @@ export default function SettingsPage() {
                             <div className="text-sm">
                                 <div className="font-medium">API Status</div>
                                 <div className="text-muted-foreground mt-1">
-                                    {process.env.NEXT_PUBLIC_HAS_AI_KEY ? (
+                                    {hasApiKey ? (
                                         <span className="text-emerald-600">✓ Gemini AI Connected</span>
                                     ) : (
                                         <span className="text-amber-600">Using mock analysis (Add GEMINI_API_KEY to enable real AI)</span>

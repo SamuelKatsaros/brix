@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { InvoiceDetail } from './InvoiceDetail';
+import { Invoice } from '@/types';
 
 export function UploadForm() {
     const router = useRouter();
     const [isDragging, setIsDragging] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<Invoice | null>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -51,14 +54,38 @@ export function UploadForm() {
 
             if (!res.ok) throw new Error('Upload failed');
 
-            // Redirect to list page to avoid 404 on serverless without DB
-            router.push(`/invoices?new=true`);
-            router.refresh();
+            // Show summary instead of redirecting
+            const invoice = await res.json();
+            setAnalysisResult(invoice);
         } catch (error) {
             console.error(error);
             setIsUploading(false);
         }
     };
+
+    if (analysisResult) {
+        return (
+            <div className="w-full h-full">
+                <div className="mb-4">
+                    <button
+                        onClick={() => {
+                            setAnalysisResult(null);
+                            setFile(null);
+                            setIsUploading(false);
+                        }}
+                        className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2"
+                    >
+                        ← Upload Another
+                    </button>
+                </div>
+                <InvoiceDetail
+                    invoice={analysisResult}
+                    vendorName="Budget Fixers" // Hardcoded for demo matching the API default
+                    propertyName="Sunset Heights" // Hardcoded for demo matching the API default
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-2xl mx-auto">

@@ -18,9 +18,56 @@ export default function ReportsPage() {
             });
     }, []);
 
-    const downloadReport = (type: string) => {
-        // Mock download - in production, this would generate actual PDF/CSV
-        alert(`Generating ${type} report... (PDF generation would happen here)`);
+    const downloadReport = async (type: string, format: 'pdf' | 'excel' | 'csv' = 'pdf') => {
+        try {
+            let endpoint = '';
+            let filename = '';
+
+            switch (type) {
+                case 'Monthly Spend':
+                    endpoint = '/api/reports/monthly-spend';
+                    filename = 'monthly-maintenance-spend.pdf';
+                    break;
+                case 'Vendor Performance':
+                    endpoint = '/api/reports/vendor-performance';
+                    filename = 'vendor-performance-scorecard.pdf';
+                    break;
+                case 'Savings Summary':
+                    if (format === 'csv') {
+                        endpoint = '/api/reports/savings-summary-csv';
+                        filename = 'cost-savings-summary.csv';
+                    } else {
+                        endpoint = '/api/reports/savings-summary';
+                        filename = 'cost-savings-summary.pdf';
+                    }
+                    break;
+                case 'Property Breakdown':
+                    endpoint = '/api/reports/property-breakdown';
+                    filename = 'property-maintenance-breakdown.xlsx';
+                    break;
+                default:
+                    alert('Unknown report type');
+                    return;
+            }
+
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+                throw new Error('Failed to generate report');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Error downloading report:', error);
+            alert('Failed to generate report. Please try again.');
+        }
     };
 
     if (loading) {
@@ -73,7 +120,7 @@ export default function ReportsPage() {
             <div>
                 <h3 className="text-lg font-semibold mb-4">Available Reports</h3>
                 <div className="grid gap-4 md:grid-cols-2">
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Monthly Spend')}>
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Monthly Spend', 'pdf')}>
                         <CardHeader className="flex flex-row items-start justify-between space-y-0">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
@@ -96,7 +143,7 @@ export default function ReportsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Vendor Performance')}>
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Vendor Performance', 'pdf')}>
                         <CardHeader className="flex flex-row items-start justify-between space-y-0">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
@@ -119,7 +166,7 @@ export default function ReportsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Savings Summary')}>
+                    <Card>
                         <CardHeader className="flex flex-row items-start justify-between space-y-0">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
@@ -127,22 +174,37 @@ export default function ReportsPage() {
                                     Cost Savings Summary
                                 </CardTitle>
                             </div>
-                            <Download className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground mb-4">
                                 AI-identified savings opportunities and successfully disputed charges.
                                 Shows ROI of the BrixAI system in dollar terms.
                             </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                                 <span>• PDF/CSV</span>
                                 <span>• Executive Summary</span>
                                 <span>• 3-4 pages</span>
                             </div>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => downloadReport('Savings Summary', 'pdf')}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Download PDF
+                                </button>
+                                <button 
+                                    onClick={() => downloadReport('Savings Summary', 'csv')}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Download CSV
+                                </button>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Property Breakdown')}>
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => downloadReport('Property Breakdown', 'excel')}>
                         <CardHeader className="flex flex-row items-start justify-between space-y-0">
                             <div>
                                 <CardTitle className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, FileText, Users, Settings, PieChart, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,12 +21,16 @@ export function Sidebar() {
     return (
         <div className="flex h-full w-64 flex-col border-r border-border bg-card text-card-foreground">
             <div className="flex h-16 items-center px-6 border-b border-border">
-                <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                        <span className="text-primary-foreground font-bold text-xl">B</span>
-                    </div>
-                    <span className="text-lg font-bold tracking-tight">BrixAI</span>
-                </div>
+                <Link href="/" className="flex items-center">
+                    <Image
+                        src="/brix.png"
+                        alt="Brix Logo"
+                        width={120}
+                        height={40}
+                        className="h-8 w-auto"
+                        priority
+                    />
+                </Link>
             </div>
 
             <div className="flex-1 overflow-y-auto py-4">

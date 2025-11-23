@@ -67,16 +67,6 @@ export function UploadForm() {
         return (
             <div className="w-full h-full">
                 <div className="mb-4">
-                    <button
-                        onClick={() => {
-                            setAnalysisResult(null);
-                            setFile(null);
-                            setIsUploading(false);
-                        }}
-                        className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2"
-                    >
-                        ← Upload Another
-                    </button>
                 </div>
                 <InvoiceDetail
                     invoice={analysisResult}

@@ -52,9 +52,7 @@ export function UploadForm() {
             if (!res.ok) throw new Error('Upload failed');
 
             const invoice = await res.json();
-            // Note: On Vercel serverless, in-memory store doesn't persist across requests
-            // Redirect to list instead of detail page to avoid 404
-            router.push(`/invoices`);
+            router.push(`/invoices/${invoice.id}`);
         } catch (error) {
             console.error(error);
             setIsUploading(false);
